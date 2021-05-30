@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Dapper;
 using TinyConfig.Abstractions;
+using TinyConfig.SimpleDB.Cryptography;
+
 
 namespace TinyConfig.SimpleDB.Core
 {
@@ -12,17 +15,24 @@ namespace TinyConfig.SimpleDB.Core
     public class SimpleDbConfigStore : ITinyConfigStore
     {
         private readonly SimpleDbConfigOptions _options;
+        private readonly AesCrypto _aes;
 
         public SimpleDbConfigStore(SimpleDbConfigOptions options)
         {
             _options = options;
+            _aes = new AesCrypto(options.EncryptionKey);
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<ITinySetting>> GetAll()
         {
             using var conn = CreateConnection();
-            return await conn.QueryAsync<SimpleSetting>($"SELECT * FROM {_options.TableName}");
+            var settings = await conn.QueryAsync<SimpleSetting>($"SELECT * FROM {_options.TableName}");
+
+            return settings.Select(entry => {
+                if (entry.IsSecret) entry.Value = _aes.Decrypt(entry.Value);
+                return entry;
+            });
         }
 
         /// <inheritdoc />
