@@ -1,6 +1,7 @@
+using System;
 using TinyConfig.Abstractions;
 
-namespace TinyConfig.SimpleDB.Core
+namespace TinyConfig.SqlServer.Core
 {
     /// <summary>
     /// simple setting model
@@ -20,5 +21,10 @@ namespace TinyConfig.SimpleDB.Core
         /// indicate if field is a secret
         /// </summary>
         public bool IsSecret { get; set; }
+
+        /// <summary>
+        /// date entry was last modified
+        /// </summary>
+        public DateTime LastModifiedOn { get; set; }
     }
 }

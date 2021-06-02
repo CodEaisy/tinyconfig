@@ -13,18 +13,12 @@ namespace TinyConfig.Abstractions
         /// </summary>
         /// <param name="versionToken"></param>
         /// <returns>true is settings has changed</returns>
-        Task<bool> HasChanged(object versionToken);
-
-        /// <summary>
-        /// check if config store has any entry
-        /// </summary>
-        /// <returns>true if has at least one entry</returns>
-        Task<bool> HasAny();
+        Task<bool> HasChanged(object versionToken = null);
 
         /// <summary>
         /// get all settings from configuration store
         /// </summary>
-        /// <returns>a list containing all configuration key value pairs</returns>
-        Task<IEnumerable<ITinySetting>> GetAll();
+        /// <returns>a list containing all configuration key value pairs, with table version token</returns>
+        Task<(IEnumerable<ITinySetting>, object)> GetAllWithVersionToken();
     }
 }

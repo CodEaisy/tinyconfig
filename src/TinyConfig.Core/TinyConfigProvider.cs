@@ -23,6 +23,7 @@ namespace TinyConfig.Core
         private readonly ITinyConfigStore _store;
         private readonly ILogger _logger;
         private readonly Dictionary<string, byte[]> _versionsCache = new Dictionary<string, byte[]>();
+        private object VersionToken;
 
         /// <summary>
         /// ctor
@@ -44,7 +45,7 @@ namespace TinyConfig.Core
         /// </summary>
         public override void Load()
         {
-            var anyCheck = _store.HasAny();
+            var anyCheck = _store.HasChanged(VersionToken);
             anyCheck.Wait();
             if (anyCheck.Result)
             {
@@ -61,10 +62,12 @@ namespace TinyConfig.Core
         public bool LoadDatabaseConfigs()
         {
             var reload = false;
-            var allConfigs = _store.GetAll();
+            var allConfigs = _store.GetAllWithVersionToken();
             allConfigs.Wait();
 
-            foreach (var config in allConfigs.Result)
+            var (settings, lastVersion) = allConfigs.Result;
+
+            foreach (var config in settings)
             {
                 if (!_versionsCache.ContainsKey(config.Id))
                 {
@@ -73,8 +76,8 @@ namespace TinyConfig.Core
                     reload = true;
                 } else
                 {
-                    if (_versionsCache.TryGetValue(config.Id, out byte[] lastVersion)
-                        && !lastVersion.SequenceEqual(config.Version))
+                    if (_versionsCache.TryGetValue(config.Id, out byte[] version)
+                        && !version.SequenceEqual(config.Version))
                     {
                         Set(config.Id, config.Value);
                         _versionsCache[config.Id] = config.Version;
@@ -82,6 +85,8 @@ namespace TinyConfig.Core
                     }
                 }
             }
+
+            VersionToken = lastVersion;
 
             return reload;
         }

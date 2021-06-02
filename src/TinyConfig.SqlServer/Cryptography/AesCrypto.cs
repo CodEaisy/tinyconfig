@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace TinyConfig.SimpleDB.Cryptography
+namespace TinyConfig.SqlServer.Cryptography
 {
     /// <summary>
     /// AES helper

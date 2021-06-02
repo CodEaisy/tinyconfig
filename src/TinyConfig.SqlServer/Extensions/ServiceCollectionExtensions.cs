@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TinyConfig.Core.Extensions;
-using TinyConfig.SimpleDB.Core;
+using TinyConfig.SqlServer.Core;
 
-namespace TinyConfig.SimpleDB.Extensions
+namespace TinyConfig.SqlServer.Extensions
 {
     /// <summary>
     /// service collection extensions
@@ -16,8 +16,8 @@ namespace TinyConfig.SimpleDB.Extensions
         /// <param name="services"></param>
         /// <param name="configuration"></param>
         /// <returns><see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddSimpleDbConfigReloader(this IServiceCollection services,
+        public static IServiceCollection AddSqlServerConfigReloader(this IServiceCollection services,
             IConfiguration configuration) =>
-                services.AddTinyConfigReloader<SimpleDbConfigOptions, SimpleDbConfigStore>(configuration);
+                services.AddTinyConfigReloader<SqlServerConfigOptions, SqlServerConfigStore>(configuration);
     }
 }
